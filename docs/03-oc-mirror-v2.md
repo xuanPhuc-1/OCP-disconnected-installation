@@ -39,6 +39,167 @@ df -h
 ```
 Khuyến nghị >= 500GB trống.
 
+## Kiểm tra kết nối internet từ server chạy oc-mirror lấy tài nguyên từ registry của Redhat
+
+### Sau khi sử dụng lệnh df -h, thấy phân vùng nào còn trống nhiều thì thực hiện tạo thư mục workspace chứa dữ liệu
+```bash
+mkdir -p /home/oc-mirror-workspace
+```
+
+## Truy cập vào Redhat để lấy thông tin pull secret bằng lệnh
+```bash
+https://console.redhat.com/openshift/install/pull-secret
+```
+
+## Tải file pull secret sau đó copy sang bastion
+
+```bash
+scp pull-secret.txt root@192.168.0.15:/root/pull-secret.json
+```
+
+## Kiểm tra file pull secret
+```bash
+ls -l /root/pull-secret.json
+jq . /root/pull-secret.json >/dev/null && echo "Pull secret OK"
+```
+## Phase 2 – Cài oc và oc-mirror
+
+### 1. Tạo workspace
+```bash
+mkdir -p /home/oc-mirror-workspace
+cd /home/oc-mirror-workspace
+```
+
+Kiểm tra:
+```bash
+pwd
+```
+
+Kết quả mong muốn:
+```
+/home/oc-mirror-workspace
+```
+
+### 2. Download OpenShift Client (oc + kubectl)
+```bash
+curl -LO https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest/openshift-client-linux.tar.gz
+```
+
+Kiểm tra:
+```bash
+ls -lh openshift-client-linux.tar.gz
+```
+
+### 3. Giải nén
+```bash
+tar -xzf openshift-client-linux.tar.gz
+```
+
+Kiểm tra:
+```bash
+ls -l
+```
+
+Kết quả mong muốn:
+```
+kubectl
+oc
+README.md
+openshift-client-linux.tar.gz
+```
+
+### 4. Cài oc và kubectl
+```bash
+install -m 755 oc /usr/local/bin/oc
+install -m 755 kubectl /usr/local/bin/kubectl
+```
+
+### 5. Thêm PATH
+
+Do RHEL của bạn thiếu `/usr/local/bin`:
+
+```bash
+echo 'export PATH=/usr/local/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+```
+
+Kiểm tra:
+```bash
+which oc
+oc version --client
+```
+
+Kết quả mong muốn:
+``` bash
+/usr/local/bin/oc
+
+Client Version: 4.22.0
+Kustomize Version: ...
+```
+
+### 6. Download oc-mirror
+
+Tại thời điểm hiện tại, oc-mirror được phát hành cùng client.
+
+Download:
+```bash
+curl -LO https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest/oc-mirror.tar.gz
+```
+
+Kiểm tra:
+```bash
+ls -lh oc-mirror.tar.gz
+```
+
+### 7. Giải nén oc-mirror
+```bash
+tar -xzf oc-mirror.tar.gz
+```
+
+Kiểm tra:
+```bash
+ls -l
+```
+
+Bạn sẽ thấy thêm:
+```
+oc-mirror
+```
+
+### 8. Cài oc-mirror
+```bash
+install -m 755 oc-mirror /usr/local/bin/oc-mirror
+```
+
+### 9. Kiểm tra
+```bash
+which oc-mirror
+oc-mirror version
+```
+
+Kết quả mong muốn:
+```
+/usr/local/bin/oc-mirror
+...
+```
+
+### 10. Kiểm tra plugin mirror của oc
+```bash
+oc mirror --help
+```
+
+Nếu hiện ra phần hướng dẫn sử dụng thì mọi thứ đã sẵn sàng.
+
+### Sau khi hoàn thành
+
+Chạy:
+```bash
+oc version --client
+oc-mirror version
+```
+và gửi mình output.
+
+
 ## ImageSetConfiguration
 ```yaml
 kind: ImageSetConfiguration
