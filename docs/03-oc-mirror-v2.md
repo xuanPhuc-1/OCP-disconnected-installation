@@ -42,8 +42,30 @@ Khuyến nghị >= 500GB trống.
 ## Kiểm tra kết nối internet từ server chạy oc-mirror lấy tài nguyên từ registry của Redhat
 
 ### Sau khi sử dụng lệnh df -h, thấy phân vùng nào còn trống nhiều thì thực hiện tạo thư mục workspace chứa dữ liệu
+cấu trúc file nên để như sau
+
+/home/oc-mirror-workspace/
+├── bin/
+├── auth/
+├── configs/
+├── mirror/
+│   ├── mirror_seq1_000000.tar
+│   ├── mirror_seq1_000001.tar
+│   ├── oc-mirror-workspace/
+│   │   ├── results-*.yaml
+│   │   └── mapping.txt
+│   └── publish/
+├── logs/
+└── archive/
+
 ```bash
-mkdir -p /home/oc-mirror-workspace
+mkdir -p /root/oc-mirror-workspace/
+mkdir -p /root/oc-mirror-workspace/auth/
+mkdir -p /root/oc-mirror-workspace/configs/
+mkdir -p /root/oc-mirror-workspace/mirror/
+mkdir -p /root/oc-mirror-workspace/logs/
+mkdir -p /root/oc-mirror-workspace/archive/
+mkdir -p /root/oc-mirror-workspace/bin
 ```
 
 ## Truy cập vào Redhat để lấy thông tin pull secret bằng lệnh
@@ -82,7 +104,7 @@ Kết quả mong muốn:
 
 ### 2. Download OpenShift Client (oc + kubectl)
 ```bash
-curl -LO https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest/openshift-client-linux.tar.gz
+curl -LO https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.21.0/openshift-client-linux.tar.gz
 ```
 
 Kiểm tra:
@@ -142,8 +164,10 @@ Kustomize Version: ...
 Tại thời điểm hiện tại, oc-mirror được phát hành cùng client.
 
 Download:
+
 ```bash
-curl -LO https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest/oc-mirror.tar.gz
+cd /root/oc-mirror-workspace/bin/
+curl -LO https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.21.0/oc-mirror.tar.gz
 ```
 
 Kiểm tra:
